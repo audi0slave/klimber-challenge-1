@@ -11,7 +11,7 @@
  * Una vez finalizado, hay que subir el código a un repo GIT y ofrecernos la URL para que podamos utilizar la nueva versión :).
  */
 
-using System;
+using DevelopmentChallenge.Data.Enums;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,154 +20,132 @@ namespace DevelopmentChallenge.Data.Classes
 {
     public class FormaGeometrica
     {
-        #region Formas
-
-        public const int Cuadrado = 1;
-        public const int TrianguloEquilatero = 2;
-        public const int Circulo = 3;
-        public const int Trapecio = 4;
-
-        #endregion
-
-        #region Idiomas
-
-        public const int Castellano = 1;
-        public const int Ingles = 2;
-
-        #endregion
-
-        private readonly decimal _lado;
-
-        public int Tipo { get; set; }
-
-        public FormaGeometrica(int tipo, decimal ancho)
+        public static string Imprimir(List<IFormaGeometrica> formas, Idiomas idioma)
         {
-            Tipo = tipo;
-            _lado = ancho;
-        }
-
-        public static string Imprimir(List<FormaGeometrica> formas, int idioma)
-        {
-            var sb = new StringBuilder();
-
             if (!formas.Any())
             {
-                if (idioma == Castellano)
-                    sb.Append("<h1>Lista vacía de formas!</h1>");
-                else
-                    sb.Append("<h1>Empty list of shapes!</h1>");
+                return MostrarMensajeListaVacia(idioma);
             }
-            else
-            {
-                // Hay por lo menos una forma
-                // HEADER
-                if (idioma == Castellano)
-                    sb.Append("<h1>Reporte de Formas</h1>");
-                else
-                    // default es inglés
-                    sb.Append("<h1>Shapes report</h1>");
 
-                var numeroCuadrados = 0;
-                var numeroCirculos = 0;
-                var numeroTriangulos = 0;
+            StringBuilder sb = new StringBuilder();
 
-                var areaCuadrados = 0m;
-                var areaCirculos = 0m;
-                var areaTriangulos = 0m;
+            #region HEADER
 
-                var perimetroCuadrados = 0m;
-                var perimetroCirculos = 0m;
-                var perimetroTriangulos = 0m;
+            sb.Append(ObtenerHeader(idioma));
 
-                for (var i = 0; i < formas.Count; i++)
+            #endregion
+
+            #region BODY
+
+            // Agrupamos las formas por su tipo. Pasamos 1 como cantidad porque solo nos interesa obtener el nombre de la forma
+            // para luego procesar y realizar los cálculos correspondientes.
+            // todo: (Esta agrupación podria mejorarse utilizando otra propiedad. Quizas GetType ?)
+
+            var formasAgrupadas = formas
+                .GroupBy(_ => _.ObtenerNombre(idioma, 1))
+                .Select(g => new
                 {
-                    if (formas[i].Tipo == Cuadrado)
-                    {
-                        numeroCuadrados++;
-                        areaCuadrados += formas[i].CalcularArea();
-                        perimetroCuadrados += formas[i].CalcularPerimetro();
-                    }
-                    if (formas[i].Tipo == Circulo)
-                    {
-                        numeroCirculos++;
-                        areaCirculos += formas[i].CalcularArea();
-                        perimetroCirculos += formas[i].CalcularPerimetro();
-                    }
-                    if (formas[i].Tipo == TrianguloEquilatero)
-                    {
-                        numeroTriangulos++;
-                        areaTriangulos += formas[i].CalcularArea();
-                        perimetroTriangulos += formas[i].CalcularPerimetro();
-                    }
-                }
-                
-                sb.Append(ObtenerLinea(numeroCuadrados, areaCuadrados, perimetroCuadrados, Cuadrado, idioma));
-                sb.Append(ObtenerLinea(numeroCirculos, areaCirculos, perimetroCirculos, Circulo, idioma));
-                sb.Append(ObtenerLinea(numeroTriangulos, areaTriangulos, perimetroTriangulos, TrianguloEquilatero, idioma));
+                    Nombre = g.Key,
+                    Cantidad = g.Count(),
+                    Area = g.Sum(_ => _.CalcularArea()),
+                    Perimetro = g.Sum(_ => _.CalcularPerimetro()),
+                    TipoForma = g.First()
+                })
+                .ToList();
 
-                // FOOTER
-                sb.Append("TOTAL:<br/>");
-                sb.Append(numeroCuadrados + numeroCirculos + numeroTriangulos + " " + (idioma == Castellano ? "formas" : "shapes") + " ");
-                sb.Append((idioma == Castellano ? "Perimetro " : "Perimeter ") + (perimetroCuadrados + perimetroTriangulos + perimetroCirculos).ToString("#.##") + " ");
-                sb.Append("Area " + (areaCuadrados + areaCirculos + areaTriangulos).ToString("#.##"));
+            // ahora hacemos los cálculos correspondientes sobre todas las formas agrupadas previamente
+            foreach (var grupoForma in formasAgrupadas)
+            {
+                sb.Append(ObtenerLinea(grupoForma.Cantidad, grupoForma.Area, grupoForma.Perimetro, grupoForma.TipoForma, idioma));
             }
+
+            #endregion
+
+            #region FOOTER
+            int numeroTotal = formasAgrupadas.Sum(_ => _.Cantidad);
+            decimal totalPerimetro = formasAgrupadas.Sum(_ => _.Perimetro);
+            decimal totalArea = formasAgrupadas.Sum(_ => _.Area);
+
+            sb.Append("TOTAL:<br/>");
+            sb.Append($"{numeroTotal} {ObtenerNombreFormas(idioma)} ");
+            sb.Append($"{ObtenerNombrePerimetro(idioma)} {totalPerimetro:#.##} ");
+            sb.Append($"{ObtenerNombreArea(idioma)} {totalArea:#.##}");
+
+            #endregion
 
             return sb.ToString();
         }
 
-        private static string ObtenerLinea(int cantidad, decimal area, decimal perimetro, int tipo, int idioma)
+        private static string ObtenerHeader(Idiomas idioma)
         {
-            if (cantidad > 0)
+            switch (idioma)
             {
-                if (idioma == Castellano)
-                    return $"{cantidad} {TraducirForma(tipo, cantidad, idioma)} | Area {area:#.##} | Perimetro {perimetro:#.##} <br/>";
-
-                return $"{cantidad} {TraducirForma(tipo, cantidad, idioma)} | Area {area:#.##} | Perimeter {perimetro:#.##} <br/>";
-            }
-
-            return string.Empty;
-        }
-
-        private static string TraducirForma(int tipo, int cantidad, int idioma)
-        {
-            switch (tipo)
-            {
-                case Cuadrado:
-                    if (idioma == Castellano) return cantidad == 1 ? "Cuadrado" : "Cuadrados";
-                    else return cantidad == 1 ? "Square" : "Squares";
-                case Circulo:
-                    if (idioma == Castellano) return cantidad == 1 ? "Círculo" : "Círculos";
-                    else return cantidad == 1 ? "Circle" : "Circles";
-                case TrianguloEquilatero:
-                    if (idioma == Castellano) return cantidad == 1 ? "Triángulo" : "Triángulos";
-                    else return cantidad == 1 ? "Triangle" : "Triangles";
-            }
-
-            return string.Empty;
-        }
-
-        public decimal CalcularArea()
-        {
-            switch (Tipo)
-            {
-                case Cuadrado: return _lado * _lado;
-                case Circulo: return (decimal)Math.PI * (_lado / 2) * (_lado / 2);
-                case TrianguloEquilatero: return ((decimal)Math.Sqrt(3) / 4) * _lado * _lado;
+                case Idiomas.Castellano:
+                    return "<h1>Reporte de Formas</h1>";
+                case Idiomas.Italiano:
+                    return "<h1>Relazione delle Forme</h1>";
                 default:
-                    throw new ArgumentOutOfRangeException(@"Forma desconocida");
+                    return "<h1>Shapes report</h1>";
             }
         }
 
-        public decimal CalcularPerimetro()
+        private static string ObtenerNombrePerimetro(Idiomas idioma)
         {
-            switch (Tipo)
+            switch (idioma)
             {
-                case Cuadrado: return _lado * 4;
-                case Circulo: return (decimal)Math.PI * _lado;
-                case TrianguloEquilatero: return _lado * 3;
+                case Idiomas.Castellano:
+                case Idiomas.Italiano:
+                    return "Perimetro";
                 default:
-                    throw new ArgumentOutOfRangeException(@"Forma desconocida");
+                    return "Perimeter";
             }
+        }
+
+        private static string ObtenerNombreArea(Idiomas idioma)
+        {
+            switch (idioma)
+            {
+                case Idiomas.Castellano:
+                case Idiomas.Italiano:
+                    return "Area";
+                default:
+                    return "Area";
+            }
+        }
+
+        private static string ObtenerNombreFormas(Idiomas idioma)
+        {
+            switch (idioma)
+            {
+                case Idiomas.Castellano:
+                    return "formas";
+                case Idiomas.Italiano:
+                    return "forme";
+                default:
+                    return "shapes";
+            }
+        }
+
+        private static string MostrarMensajeListaVacia(Idiomas idioma)
+        {
+            switch (idioma)
+            {
+                case Idiomas.Castellano:
+                    return "<h1>Lista vacía de formas!</h1>";
+                case Idiomas.Italiano:
+                    return "<h1>Lista vuota di forme!</h1>";
+                default:
+                    return "<h1>Empty list of shapes!</h1>";
+            }
+        }
+
+        private static string ObtenerLinea(int cantidad, decimal area, decimal perimetro, IFormaGeometrica tipoForma, Idiomas idioma)
+        {
+            string nombreForma = tipoForma.ObtenerNombre(idioma, cantidad);
+            string tituloPerimetro = ObtenerNombrePerimetro(idioma);
+            string tituloArea = ObtenerNombreArea(idioma);
+
+            return $"{cantidad} {nombreForma} | {tituloArea} {area:#.##} | {tituloPerimetro} {perimetro:#.##} <br/>";
         }
     }
 }
