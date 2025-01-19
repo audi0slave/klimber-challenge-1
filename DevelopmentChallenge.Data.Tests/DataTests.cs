@@ -90,5 +90,35 @@ namespace DevelopmentChallenge.Data.Tests
                 "<h1>Reporte de Formas</h1>2 Cuadrados | Area 29 | Perimetro 28 <br/>2 Círculos | Area 13,01 | Perimetro 18,06 <br/>3 Triángulos | Area 49,64 | Perimetro 51,6 <br/>TOTAL:<br/>7 formas Perimetro 97,66 Area 91,65",
                 resumen);
         }
+
+        [TestCase]
+        public void TestResumenListaConUnTrapecioEnCastellano()
+        {
+            var formas = new List<IFormaGeometrica>
+            {
+                new Trapecio(10, 6, 4)
+            };
+
+            var resumen = FormaGeometrica.Imprimir(formas, Enums.Idiomas.Castellano);
+
+            ClassicAssert.AreEqual(
+                "<h1>Reporte de Formas</h1>1 Trapecio | Area 32 | Perimetro 25,66 <br/>TOTAL:<br/>1 formas Perimetro 25,66 Area 32",
+                resumen);
+        }
+
+        [TestCase]
+        public void TestResumenListaConUnTrapecioEnIngles()
+        {
+            var formas = new List<IFormaGeometrica>
+            {
+                new Trapecio(10, 6, 4)
+            };
+
+            var resumen = FormaGeometrica.Imprimir(formas, Enums.Idiomas.Ingles);
+
+            ClassicAssert.AreEqual(
+                "<h1>Shapes report</h1>1 Trapezoid | Area 32 | Perimeter 25,66 <br/>TOTAL:<br/>1 shapes Perimeter 25,66 Area 32",
+                resumen);
+        }
     }
 }
