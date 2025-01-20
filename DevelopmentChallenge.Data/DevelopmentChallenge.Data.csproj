@@ -51,14 +51,29 @@
     <Compile Include="Classes\Formas\Cuadrado.cs" />
     <Compile Include="Classes\IFormaGeometrica.cs" />
     <Compile Include="Enums\Idiomas.cs" />
+    <Compile Include="Utils\IdiomasExtension.cs" />
     <Compile Include="Enums\TiposFormaGeometrica.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Include="Utils\Diccionario.cs" />
+    <Compile Include="Utils\IdiomaHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Messages.it.resx" />
+    <EmbeddedResource Include="Resources\Messages.en.resx" />
+    <EmbeddedResource Include="Resources\Messages.es.resx" />
+    <EmbeddedResource Include="Resources\Messages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

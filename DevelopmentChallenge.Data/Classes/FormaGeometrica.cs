@@ -12,6 +12,7 @@
  */
 
 using DevelopmentChallenge.Data.Enums;
+using DevelopmentChallenge.Data.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,14 +25,15 @@ namespace DevelopmentChallenge.Data.Classes
         {
             if (!formas.Any())
             {
-                return MostrarMensajeListaVacia(idioma);
+                string emptyListMessage = IdiomaHelper.GetLocalizedString("ListaVacia", idioma);
+
+                return emptyListMessage;
             }
 
             StringBuilder sb = new StringBuilder();
 
             #region HEADER
-
-            sb.Append(ObtenerHeader(idioma));
+            sb.Append(IdiomaHelper.GetLocalizedString("TextoHeader", idioma));
 
             #endregion
 
@@ -39,8 +41,8 @@ namespace DevelopmentChallenge.Data.Classes
 
             // Agrupamos las formas por su tipo. Pasamos 1 como cantidad porque solo nos interesa obtener el nombre de la forma
             // para luego procesar y realizar los cálculos correspondientes.
-            // todo: (Esta agrupación podria mejorarse utilizando otra propiedad. Quizas GetType ?)
-
+            
+            // todo: (Esta agrupación quizás podria mejorarse utilizando otra propiedad en lugar de ObtenerNombre?. Quizas usar GetType ?)
             var formasAgrupadas = formas
                 .GroupBy(_ => _.ObtenerNombre(idioma, 1))
                 .Select(g => new
@@ -67,83 +69,20 @@ namespace DevelopmentChallenge.Data.Classes
             decimal totalArea = formasAgrupadas.Sum(_ => _.Area);
 
             sb.Append("TOTAL:<br/>");
-            sb.Append($"{numeroTotal} {ObtenerNombreFormas(idioma)} ");
-            sb.Append($"{ObtenerNombrePerimetro(idioma)} {totalPerimetro:#.##} ");
-            sb.Append($"{ObtenerNombreArea(idioma)} {totalArea:#.##}");
+            sb.Append($"{numeroTotal} {IdiomaHelper.GetLocalizedString("TextoFormas", idioma)} ");
+            sb.Append($"{IdiomaHelper.GetLocalizedString("TextoPerimetro", idioma)} {totalPerimetro:#.##} ");
+            sb.Append($"{IdiomaHelper.GetLocalizedString("TextoArea", idioma)} {totalArea:#.##}");
 
             #endregion
 
             return sb.ToString();
         }
 
-        private static string ObtenerHeader(Idiomas idioma)
-        {
-            switch (idioma)
-            {
-                case Idiomas.Castellano:
-                    return "<h1>Reporte de Formas</h1>";
-                case Idiomas.Italiano:
-                    return "<h1>Relazione delle Forme</h1>";
-                default:
-                    return "<h1>Shapes report</h1>";
-            }
-        }
-
-        private static string ObtenerNombrePerimetro(Idiomas idioma)
-        {
-            switch (idioma)
-            {
-                case Idiomas.Castellano:
-                case Idiomas.Italiano:
-                    return "Perimetro";
-                default:
-                    return "Perimeter";
-            }
-        }
-
-        private static string ObtenerNombreArea(Idiomas idioma)
-        {
-            switch (idioma)
-            {
-                case Idiomas.Castellano:
-                case Idiomas.Italiano:
-                    return "Area";
-                default:
-                    return "Area";
-            }
-        }
-
-        private static string ObtenerNombreFormas(Idiomas idioma)
-        {
-            switch (idioma)
-            {
-                case Idiomas.Castellano:
-                    return "formas";
-                case Idiomas.Italiano:
-                    return "forme";
-                default:
-                    return "shapes";
-            }
-        }
-
-        private static string MostrarMensajeListaVacia(Idiomas idioma)
-        {
-            switch (idioma)
-            {
-                case Idiomas.Castellano:
-                    return "<h1>Lista vacía de formas!</h1>";
-                case Idiomas.Italiano:
-                    return "<h1>Lista vuota di forme!</h1>";
-                default:
-                    return "<h1>Empty list of shapes!</h1>";
-            }
-        }
-
         private static string ObtenerLinea(int cantidad, decimal area, decimal perimetro, IFormaGeometrica tipoForma, Idiomas idioma)
         {
             string nombreForma = tipoForma.ObtenerNombre(idioma, cantidad);
-            string tituloPerimetro = ObtenerNombrePerimetro(idioma);
-            string tituloArea = ObtenerNombreArea(idioma);
+            string tituloPerimetro = IdiomaHelper.GetLocalizedString("TextoPerimetro", idioma);
+            string tituloArea = IdiomaHelper.GetLocalizedString("TextoArea", idioma);
 
             return $"{cantidad} {nombreForma} | {tituloArea} {area:#.##} | {tituloPerimetro} {perimetro:#.##} <br/>";
         }

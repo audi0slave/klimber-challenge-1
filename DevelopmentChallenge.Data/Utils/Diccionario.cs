@@ -5,49 +5,32 @@ namespace DevelopmentChallenge.Data.Utils
 {
     public static class Diccionario
     {
-        private static readonly Dictionary<(TiposFormaGeometrica, Idiomas, bool), string> _traduccion
-            = new Dictionary<(TiposFormaGeometrica, Idiomas, bool), string>()
+        private static readonly Dictionary<(TiposFormaGeometrica, bool), string> _clavesRecursos = new Dictionary<(TiposFormaGeometrica, bool), string>()
         {
             // Cuadrado
-            { (TiposFormaGeometrica.Cuadrado, Idiomas.Castellano, true), "Cuadrado" },
-            { (TiposFormaGeometrica.Cuadrado, Idiomas.Castellano, false), "Cuadrados" },
-            { (TiposFormaGeometrica.Cuadrado, Idiomas.Ingles, true), "Square" },
-            { (TiposFormaGeometrica.Cuadrado, Idiomas.Ingles, false), "Squares" },
-            { (TiposFormaGeometrica.Cuadrado, Idiomas.Italiano, true), "Quadrato" },
-            { (TiposFormaGeometrica.Cuadrado, Idiomas.Italiano, false), "Quadrati" },
+            { (TiposFormaGeometrica.Cuadrado, true), "NombreForma_CuadradoSingular" },
+            { (TiposFormaGeometrica.Cuadrado, false), "NombreForma_CuadradoPlural" },
 
             // Circulo
-            { (TiposFormaGeometrica.Circulo, Idiomas.Castellano, true), "Círculo" },
-            { (TiposFormaGeometrica.Circulo, Idiomas.Castellano, false), "Círculos" },
-            { (TiposFormaGeometrica.Circulo, Idiomas.Ingles, true), "Circle" },
-            { (TiposFormaGeometrica.Circulo, Idiomas.Ingles, false), "Circles" },
-            { (TiposFormaGeometrica.Circulo, Idiomas.Italiano, true), "Cerchio" },
-            { (TiposFormaGeometrica.Circulo, Idiomas.Italiano, false), "Cerchi" },
+            { (TiposFormaGeometrica.Circulo, true), "NombreForma_CirculoSingular" },
+            { (TiposFormaGeometrica.Circulo, false), "NombreForma_CirculoPlural" },
 
             // TrianguloEquilatero
-            { (TiposFormaGeometrica.TrianguloEquilatero, Idiomas.Castellano, true), "Triángulo" },
-            { (TiposFormaGeometrica.TrianguloEquilatero, Idiomas.Castellano, false), "Triángulos" },
-            { (TiposFormaGeometrica.TrianguloEquilatero, Idiomas.Ingles, true), "Triangle" },
-            { (TiposFormaGeometrica.TrianguloEquilatero, Idiomas.Ingles, false), "Triangles" },
-            { (TiposFormaGeometrica.TrianguloEquilatero, Idiomas.Italiano, true), "Triangolo" },
-            { (TiposFormaGeometrica.TrianguloEquilatero, Idiomas.Italiano, false), "Triangoli" },
+            { (TiposFormaGeometrica.TrianguloEquilatero, true), "NombreForma_TrianguloSingular" },
+            { (TiposFormaGeometrica.TrianguloEquilatero, false), "NombreForma_TrianguloPlural" },
 
             // Trapecio
-            { (TiposFormaGeometrica.Trapecio, Idiomas.Castellano, true), "Trapecio" },
-            { (TiposFormaGeometrica.Trapecio, Idiomas.Castellano, false), "Trapecios" },
-            { (TiposFormaGeometrica.Trapecio, Idiomas.Ingles, true), "Trapezoid" },
-            { (TiposFormaGeometrica.Trapecio, Idiomas.Ingles, false), "Trapezoids" },
-            { (TiposFormaGeometrica.Trapecio, Idiomas.Italiano, true), "Trapezio" },
-            { (TiposFormaGeometrica.Trapecio, Idiomas.Italiano, false), "Trapezi" },
+            { (TiposFormaGeometrica.Trapecio, true), "NombreForma_TrapecioSingular" },
+            { (TiposFormaGeometrica.Trapecio, false), "NombreForma_TrapecioPlural" },
         };
 
         public static string TraducirNombreForma(TiposFormaGeometrica forma, Idiomas idioma, int cantidad)
         {
             bool singular = cantidad == 1;
 
-            if (_traduccion.TryGetValue((forma, idioma, singular), out string nombre))
+            if (_clavesRecursos.TryGetValue((forma, singular), out string nombreClave))
             {
-                return nombre;
+                return IdiomaHelper.GetLocalizedString(nombreClave, idioma);
             }
 
             return "N/A";

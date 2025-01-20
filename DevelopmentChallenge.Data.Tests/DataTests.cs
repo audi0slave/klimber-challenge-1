@@ -81,13 +81,18 @@ namespace DevelopmentChallenge.Data.Tests
                 new Cuadrado(2),
                 new TrianguloEquilatero(9),
                 new Circulo(2.75m),
-                new TrianguloEquilatero(4.2m)
+                new TrianguloEquilatero(4.2m),
+                new Trapecio(10, 6, 4)
             };
 
             var resumen = FormaGeometrica.Imprimir(formas, Enums.Idiomas.Castellano);
 
-            ClassicAssert.AreEqual(
+            /*ClassicAssert.AreEqual(
                 "<h1>Reporte de Formas</h1>2 Cuadrados | Area 29 | Perimetro 28 <br/>2 Círculos | Area 13,01 | Perimetro 18,06 <br/>3 Triángulos | Area 49,64 | Perimetro 51,6 <br/>TOTAL:<br/>7 formas Perimetro 97,66 Area 91,65",
+                resumen);*/
+
+            ClassicAssert.AreEqual(
+                "<h1>Reporte de Formas</h1>2 Cuadrados | Area 29 | Perimetro 28 <br/>2 Círculos | Area 13,01 | Perimetro 18,06 <br/>3 Triángulos | Area 49,64 | Perimetro 51,6 <br/>1 Trapecio | Area 32 | Perimetro 25,66 <br/>TOTAL:<br/>8 formas Perimetro 123,32 Area 123,65",
                 resumen);
         }
 
@@ -118,6 +123,21 @@ namespace DevelopmentChallenge.Data.Tests
 
             ClassicAssert.AreEqual(
                 "<h1>Shapes report</h1>1 Trapezoid | Area 32 | Perimeter 25,66 <br/>TOTAL:<br/>1 shapes Perimeter 25,66 Area 32",
+                resumen);
+        }
+
+        [TestCase]
+        public void TestResumenListaConUnTrapecioEnItaliano()
+        {
+            var formas = new List<IFormaGeometrica>
+            {
+                new Trapecio(10, 6, 4)
+            };
+
+            var resumen = FormaGeometrica.Imprimir(formas, Enums.Idiomas.Italiano);
+
+            ClassicAssert.AreEqual(
+                "<h1>Relazione delle Forme</h1>1 Trapezio | Area 32 | Perimetro 25,66 <br/>TOTAL:<br/>1 forme Perimetro 25,66 Area 32",
                 resumen);
         }
     }
